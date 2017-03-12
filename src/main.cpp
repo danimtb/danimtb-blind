@@ -242,11 +242,11 @@ void setup()
 
     button2.setup(BUTTON2_PIN, PULLDOWN);
     button2.setShortPressCallback(blindUp);
-    button2.setShortPressCallback(blindDown);
+    button2.setLongPressCallback(blindDown);
     button2.setLongLongPressCallback(button2_longlongPress);
 
     // Configure LED
-    led.setup(LED_PIN, LED_LOW_LVL);
+    led.setup(LED_PIN, LED_HIGH_LVL);
     led.on();
     delay(300);
     led.off();
