@@ -24,7 +24,7 @@
 
 #define DEVICE_TYPE "electrodragon"
 #define LED_PIN 16
-#define BUTTON_STOP_PIN 15
+#define BUTTON_STOP_PIN 14
 #define BUTTON_UP_PIN 4
 #define BUTTON_DOWN_PIN 5
 #define RELAY_UP_PIN 12
