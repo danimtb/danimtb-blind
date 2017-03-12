@@ -24,8 +24,9 @@
 
 #define DEVICE_TYPE "electrodragon"
 #define LED_PIN 16
-#define BUTTON1_PIN 2
-#define BUTTON2_PIN 0
+#define BUTTON_STOP_PIN 15
+#define BUTTON_UP_PIN 4
+#define BUTTON_DOWN_PIN 5
 #define RELAY_UP_PIN 12
 #define RELAY_DOWN_PIN 13
 
@@ -36,8 +37,9 @@ WifiManager wifiManager;
 MqttManager mqttManager;
 Relay relayUp;
 Relay relayDown;
-Button button1;
-Button button2;
+Button buttonStop;
+Button buttonUp;
+Button buttonDown;
 LED led;
 
 std::string wifi_ssid = dataManager.getWifiSSID();
@@ -208,7 +210,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
     }
 }
 
-void button2_longlongPress()
+void longlongPress()
 {
     Serial.println("button2.longlongPress()");
 
@@ -237,13 +239,18 @@ void setup()
     relayDown.setup(RELAY_DOWN_PIN, RELAY_HIGH_LVL);
 
     // Configure Buttons
-    button1.setup(BUTTON1_PIN);
-    button1.setShortPressCallback(blindStop);
+    buttonStop.setup(BUTTON_STOP_PIN, PULLDOWN);
+    buttonStop.setShortPressCallback(blindStop);
+    buttonStop.setLongPressCallback(blindStop);
+    buttonStop.setLongLongPressCallback(longlongPress);
 
-    button2.setup(BUTTON2_PIN, PULLDOWN);
-    button2.setShortPressCallback(blindUp);
-    button2.setLongPressCallback(blindDown);
-    button2.setLongLongPressCallback(button2_longlongPress);
+    buttonUp.setup(BUTTON_UP_PIN, PULLDOWN);
+    buttonUp.setShortPressCallback(blindUp);
+    buttonUp.setLongPressCallback(blindUp);
+
+    buttonDown.setup(BUTTON_DOWN_PIN, PULLDOWN);
+    buttonDown.setShortPressCallback(blindDown);
+    buttonDown.setLongPressCallback(blindDown);
 
     // Configure LED
     led.setup(LED_PIN, LED_HIGH_LVL);
@@ -278,8 +285,9 @@ void setup()
 void loop()
 {
     // Process Buttons events
-    button1.loop();
-    button2.loop();
+    buttonStop.loop();
+    buttonUp.loop();
+    buttonDown.loop();
 
     // Check Wifi status
     wifiManager.loop();
