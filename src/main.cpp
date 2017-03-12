@@ -56,20 +56,20 @@ std::string device_name = dataManager.getDeviceName();
 std::string mqtt_status = dataManager.getMqttTopic(0);
 std::string mqtt_command = dataManager.getMqttTopic(1);
 
-void blindUp()
+void blindOpen()
 {
-    Serial.println("UP");
+    Serial.println("OPEN");
     relayDown.off();
     relayUp.on();
-    mqttManager.publishMQTT(mqtt_status, "UP");
+    mqttManager.publishMQTT(mqtt_status, "OPEN");
 }
 
-void blindDown()
+void blindClose()
 {
-    Serial.println("DOWN");
+    Serial.println("CLOSE");
     relayUp.off();
     relayDown.on();
-    mqttManager.publishMQTT(mqtt_status, "DOWN");
+    mqttManager.publishMQTT(mqtt_status, "CLOSE");
 }
 
 void blindStop()
@@ -185,13 +185,13 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
     if (topicString == mqtt_command)
     {
-        if (payloadString == "UP")
+        if (payloadString == "OPEN")
         {
-            blindUp();
+            blindOpen();
         }
-        else if (payloadString == "DOWN")
+        else if (payloadString == "CLOSE")
         {
-            blindDown();
+            blindClose();
         }
         else if (payloadString == "STOP")
         {
@@ -245,12 +245,12 @@ void setup()
     buttonStop.setLongLongPressCallback(longlongPress);
 
     buttonUp.setup(BUTTON_UP_PIN, PULLDOWN);
-    buttonUp.setShortPressCallback(blindUp);
-    buttonUp.setLongPressCallback(blindUp);
+    buttonUp.setShortPressCallback(blindOpen);
+    buttonUp.setLongPressCallback(blindOpen);
 
     buttonDown.setup(BUTTON_DOWN_PIN, PULLDOWN);
-    buttonDown.setShortPressCallback(blindDown);
-    buttonDown.setLongPressCallback(blindDown);
+    buttonDown.setShortPressCallback(blindClose);
+    buttonDown.setLongPressCallback(blindClose);
 
     // Configure LED
     led.setup(LED_PIN, LED_HIGH_LVL);
