@@ -9,6 +9,7 @@
 #include "../lib/Button/Button.h"
 #include "../lib/DataManager/DataManager.h"
 #include "../lib/MqttManager/MqttManager.h"
+#include "../lib/SimpleTimer/SimpleTimer.h"
 #include "../lib/WifiManager/WifiManager.h"
 #include "../lib/WebServer/WebServer.h"
 #include "../lib/UpdateManager/UpdateManager.h"
@@ -35,6 +36,8 @@ UpdateManager updateManager;
 DataManager dataManager;
 WifiManager wifiManager;
 MqttManager mqttManager;
+SimpleTimer relayUpTimer;
+SimpleTimer relayDownTimer;
 Relay relayUp;
 Relay relayDown;
 Button buttonStop;
@@ -61,6 +64,7 @@ void blindOpen()
     Serial.println("OPEN");
     relayDown.off();
     relayUp.on();
+    relayUpTimer.start();
     mqttManager.publishMQTT(mqtt_status, "OPEN");
 }
 
@@ -69,6 +73,7 @@ void blindClose()
     Serial.println("CLOSE");
     relayUp.off();
     relayDown.on();
+    relayDownTimer.start();
     mqttManager.publishMQTT(mqtt_status, "CLOSE");
 }
 
@@ -234,6 +239,10 @@ void setup()
     // Init serial comm
     Serial.begin(115200);
 
+    // Configure Timers
+    relayUpTimer.setup(RT_ON, 90000);
+    relayDownTimer.setup(RT_ON, 90000);
+
     // Configure Relay
     relayUp.setup(RELAY_UP_PIN, RELAY_HIGH_LVL);
     relayDown.setup(RELAY_DOWN_PIN, RELAY_HIGH_LVL);
@@ -318,5 +327,23 @@ void loop()
     else
     {
         led.off();
+    }
+
+    // Relay Up Timer control
+    if(relayUp.getState())
+    {
+        if(relayUpTimer.check())
+        {
+            relayUp.off();
+        }
+    }
+
+    // Relay Down Timer control
+    if(relayDown.getState())
+    {
+        if(relayDownTimer.check())
+        {
+            relayDown.off();
+        }
     }
 }
