@@ -217,7 +217,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
 void longlongPress()
 {
-    Serial.println("button2.longlongPress()");
+    Serial.println("longlongPress()");
 
     if(wifiManager.apModeEnabled())
     {
