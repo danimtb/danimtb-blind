@@ -23,7 +23,7 @@
 
 //#################### ======= ####################
 
-#define DEVICE_TYPE "electrodragon"
+#define DEVICE_TYPE "electrodragon-3b"
 #define LED_PIN 16
 #define BUTTON_STOP_PIN 14
 #define BUTTON_UP_PIN 4
