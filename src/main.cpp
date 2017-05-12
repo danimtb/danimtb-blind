@@ -61,25 +61,23 @@ std::string mqtt_command = dataManager.getMqttTopic(1);
 
 void blindOpen()
 {
-    Serial.println("OPEN");
+    Serial.println("blindOpen()");
     relayDown.off();
     relayUp.on();
     relayUpTimer.start();
-    mqttManager.publishMQTT(mqtt_status, "OPEN");
 }
 
 void blindClose()
 {
-    Serial.println("CLOSE");
+    Serial.println("blindClose()");
     relayUp.off();
     relayDown.on();
     relayDownTimer.start();
-    mqttManager.publishMQTT(mqtt_status, "CLOSE");
 }
 
 void blindStop()
 {
-    Serial.println("STOP");
+    Serial.println("blindStop()");
     relayDown.off();
     relayUp.off();
     mqttManager.publishMQTT(mqtt_status, "STOP");
@@ -234,8 +232,8 @@ void setup()
     Serial.begin(115200);
 
     // Configure Timers
-    relayUpTimer.setup(RT_ON, 90000);
-    relayDownTimer.setup(RT_ON, 90000);
+    relayUpTimer.setup(RT_ON, 30000);
+    relayDownTimer.setup(RT_ON, 30000);
 
     // Configure Relay
     relayUp.setup(RELAY_UP_PIN, RELAY_HIGH_LVL);
@@ -329,6 +327,7 @@ void loop()
         if(relayUpTimer.check())
         {
             relayUp.off();
+            mqttManager.publishMQTT(mqtt_status, "OPEN");
         }
     }
 
@@ -338,6 +337,7 @@ void loop()
         if(relayDownTimer.check())
         {
             relayDown.off();
+            mqttManager.publishMQTT(mqtt_status, "CLOSE");
         }
     }
 }
