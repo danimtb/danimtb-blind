@@ -16,14 +16,14 @@
 
 
 
-//#################### FW DATA ####################
+//#################### FIRMWARE DATA ####################
 
-#define FW "electroblind"
-#define FW_VERSION "0.0.1"
+#define FIRMWARE "electroblind"
+#define FIRMWARE_VERSION "0.0.1"
 
 //#################### ======= ####################
 
-#define DEVICE_TYPE "electrodragon-3b"
+#define HARDWARE "electrodragon-3b"
 #define LED_PIN 16
 #define BUTTON_STOP_PIN 14
 #define BUTTON_UP_PIN 4
@@ -144,11 +144,11 @@ std::vector<std::pair<std::string, std::string>> getWebServerData()
     webServerData.push_back(generic_pair);
 
     generic_pair.first = "firmware_version";
-    generic_pair.second = FW_VERSION;
+    generic_pair.second = FIRMWARE_VERSION;
     webServerData.push_back(generic_pair);
 
-    generic_pair.first = "device_type";
-    generic_pair.second = DEVICE_TYPE;
+    generic_pair.first = "hardware";
+    generic_pair.second = HARDWARE;
     webServerData.push_back(generic_pair);
 
     return webServerData;
@@ -176,17 +176,11 @@ void webServerSubmitCallback(std::map<std::string, std::string> inputFieldsConte
     ESP.restart(); // Restart device with new config
 }
 
-void MQTTcallback(char* topic, byte* payload, unsigned int length)
+void MQTTcallback(std::string topicString, std::string payloadString)
 {
     Serial.print("Message arrived from topic [");
-    Serial.print(topic);
+    Serial.print(topicString.c_str());
     Serial.println("] ");
-
-    //ALWAYS DO THIS: Set end of payload string to length
-    payload[length] = '\0'; //Do not delete
-
-    std::string topicString(topic);
-    std::string payloadString((char *)payload);
 
     if (topicString == mqtt_command)
     {
@@ -268,12 +262,12 @@ void setup()
     led.off();
 
     // Configure Wifi
-    wifiManager.setup(wifi_ssid, wifi_password, ip, mask, gateway, DEVICE_TYPE);
+    wifiManager.setup(wifi_ssid, wifi_password, ip, mask, gateway, HARDWARE);
     wifiManager.connectStaWifi();
 
     // Configure MQTT
     mqttManager.setup(mqtt_server, mqtt_port.c_str(), mqtt_username, mqtt_password);
-    mqttManager.setDeviceData(device_name, DEVICE_TYPE, ip, FW, FW_VERSION);
+    mqttManager.setDeviceData(device_name, HARDWARE, ip, FIRMWARE, FIRMWARE_VERSION);
     mqttManager.addStatusTopic(mqtt_status);
     mqttManager.addSubscribeTopic(mqtt_command);
     mqttManager.setCallback(MQTTcallback);
@@ -288,7 +282,7 @@ void setup()
     ArduinoOTA.begin();
 
     // UpdateManager setup
-    updateManager.setup(ota, FW, FW_VERSION, DEVICE_TYPE);
+    updateManager.setup(ota, FIRMWARE, FIRMWARE_VERSION, HARDWARE);
 }
 
 void loop()
